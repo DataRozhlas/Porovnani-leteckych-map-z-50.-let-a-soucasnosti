@@ -51,7 +51,6 @@ maps = for let i in [0, 1]
       center: center
       inertia: no
       zoomControl: !i
-  map.on \click -> console.log [it.latlng.lat, it.latlng.lng]
   if i is 0
     layers =
       L.tileLayer do
@@ -70,13 +69,14 @@ maps = for let i in [0, 1]
         * 'https://geoportal.gov.cz/ArcGIS/rest/services/CENIA/cenia_rt_ortofotomapa_historicka/MapServer/tile/{z}/{y}/{x}?token=WzhTU6WUdzsTdgrVaNjNnJhgdYMRdL3fsGG9CpK72sIAAPg6WLlHsh4nSw72pvQb'
         * attribution: "Historická ortofotomapa © <a href='http://www.cenia.cz/' target='_blank'>CENIA</a> 2010 a <a href='http://www.geodis.cz/' target='_blank'>GEODIS BRNO, spol. s r.o.</a> 2010, Podkladové letecké snímky poskytl <a href='http://www.geoservice.army.cz/' target='_blank'>VGHMÚř Dobruška</a>, © MO ČR 2009"
       L.tileLayer do
-        * 'https://geoportal.gov.cz/ArcGIS/rest/services/CENIA/cenia_rt_ortofotomapa_historicka/MapServer/tile/{z}/{y}/{x}?token=WzhTU6WUdzsTdgrVaNjNnJhgdYMRdL3fsGG9CpK72sIAAPg6WLlHsh4nSw72pvQb'
+        * 'https://tiles.arcgis.com/tiles/h9E2wwIZUacHyhVE/arcgis/rest/services/slapy-smo5/MapServer/tile/{z}/{y}/{x}'
         * attribution: "Podkladová data SMO5 © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
     layersAssoc =
       "Ortofotomapa 50. léta": layers.0
-      "Mapa 50. léta": layers.1
+      "Mapa 50. léta": layers.0
     map.addLayer layers.0
-  map.addControl L.control.layers layersAssoc, {}, collapsed: no
+  if not i
+    map.addControl L.control.layers layersAssoc, {}, collapsed: no
   map
 
 sync ...maps
