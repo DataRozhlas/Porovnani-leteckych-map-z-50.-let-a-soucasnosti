@@ -35,22 +35,32 @@ sync = (mapMaster, mapSlave) ->
 diff =
   0
   -53.865108489990234 - -57.298164367675774
+
 maps = for let i in [0, 1]
   elm = document.createElement "div"
     ..className = "map"
     ..id = "map-#i"
   ig.containers.base.appendChild elm
-  center = [59.95, -57.30]
+  center = if location.hash
+    [lat, lon, zoom] = location.hash.substr 1 .split /[^-\.0-9]+/
+    lat = parseFloat lat
+    lon = parseFloat lon
+    zoom = parseFloat zoom
+    [lat, lon]
+  else
+    zoom = 10
+    [59.95, -57.30]
   if i
     center.0 -= diff.0
     center.1 -= diff.1
   map = L.map do
     * elm
-    * zoom: 10
+    * zoom: zoom
       maxZoom: 13
       center: center
       inertia: no
       zoomControl: !i
+  map.on \click -> window.location.hash = "#{it.latlng.lat},#{it.latlng.lng},#{map.getZoom!}"
   if i is 0
     layers =
       L.tileLayer do
