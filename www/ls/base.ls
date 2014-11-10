@@ -70,10 +70,10 @@ maps = for let i in [0, 1]
   if i is 0
     layers =
       L.tileLayer do
-        * 'http://geoportal-orto3.cuzk.cz/WMTS_ORTOFOTO/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=orto&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
+        * 'http://samizdat.cz/proxy/cuzk_orto/WMTS_ORTOFOTO/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=orto&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
         * attribution: "Ortofoto ČR © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
       L.tileLayer do
-        * 'http://geoportal-zm2.cuzk.cz/WMTS_ZM/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=zm&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
+        * 'http://samizdat.cz/proxy/cuzk_geo//WMTS_ZM/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=zm&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
         * attribution: "Základní mapy ČR © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
     layersAssoc =
       "Ortofotomapa současnost": layers.0
@@ -82,11 +82,14 @@ maps = for let i in [0, 1]
   else
     layers =
       L.tileLayer do
-        * 'https://geoportal.gov.cz/ArcGIS/rest/services/CENIA/cenia_rt_ortofotomapa_historicka/MapServer/tile/{z}/{y}/{x}?token=WzhTU6WUdzsTdgrVaNjNnJhgdYMRdL3fsGG9CpK72sIAAPg6WLlHsh4nSw72pvQb'
+        * 'https://samizdat.cz/proxy/gov_geoportal/ArcGIS/rest/services/CENIA/cenia_rt_ortofotomapa_historicka/MapServer/tile/{z}/{y}/{x}?token=WzhTU6WUdzsTdgrVaNjNnJhgdYMRdL3fsGG9CpK72sIAAPg6WLlHsh4nSw72pvQb'
         * attribution: "Historická ortofotomapa © <a href='http://www.cenia.cz/' target='_blank'>CENIA</a> 2010 a <a href='http://www.geodis.cz/' target='_blank'>GEODIS BRNO, spol. s r.o.</a> 2010, Podkladové letecké snímky poskytl <a href='http://www.geoservice.army.cz/' target='_blank'>VGHMÚř Dobruška</a>, © MO ČR 2009"
-      L.tileLayer do
-        * 'https://tiles.arcgis.com/tiles/h9E2wwIZUacHyhVE/arcgis/rest/services/slapy-smo5/MapServer/tile/{z}/{y}/{x}'
-        * attribution: "Podkladová data SMO5 © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
+      L.tileLayer.wms do
+        * 'http://archivnimapy.cuzk.cz/cgi-bin/mapserv.exe?mode=map&map=e:/wwwdata/main/cio_main_wms_05.map&SERVICE=WMS&REQUEST=GetCapabilities'
+        * format: 'img/jpeg',
+          layers: ['smo5_1vyd_sm5'],
+          crs:  crs,
+          transparent: true
     layersAssoc =
       "Ortofotomapa 50. léta": layers.0
       "Mapa 50. léta": layers.0
