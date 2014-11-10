@@ -33,9 +33,14 @@ sync = (mapMaster, mapSlave) ->
     center.1 += diff.1
     mapMaster.setView center, evt.target._animateToZoom
 diff =
-  0
-  -53.865108489990234 - -57.298164367675774
-
+  50.0994878082588 - 50.09333513996532
+  14.441656813751825 - 14.37241038890274
+res = resolutions: [0 to 13].map -> 2048.256 / (2 ** it)
+crs = new L.Proj.CRS.TMS do
+  * "EPSG:102067"
+  * "+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +units=m no_defs"
+  * [-925000.000000000000 -1444353.535999999800 -400646.464000000040 -920000.000000000000]
+  * res
 maps = for let i in [0, 1]
   elm = document.createElement "div"
     ..className = "map"
@@ -49,7 +54,7 @@ maps = for let i in [0, 1]
     [lat, lon]
   else
     zoom = 10
-    [59.95, -57.30]
+    [49.820540567975925 14.430988109454786]
   if i
     center.0 -= diff.0
     center.1 -= diff.1
@@ -60,6 +65,7 @@ maps = for let i in [0, 1]
       center: center
       inertia: no
       zoomControl: !i
+      crs: crs
   map.on \click -> window.location.hash = "#{it.latlng.lat},#{it.latlng.lng},#{map.getZoom!}"
   if i is 0
     layers =
