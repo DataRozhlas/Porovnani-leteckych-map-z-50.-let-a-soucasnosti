@@ -1,3 +1,7 @@
+diff =
+  50.0994878082588 - 50.09333513996532
+  14.441656813751825 - 14.37241038890274
+
 sync = (mapMaster, mapSlave) ->
   mapMaster.on "drag" ->
     {lat, lng} = mapMaster.getCenter!
@@ -32,9 +36,18 @@ sync = (mapMaster, mapSlave) ->
     center.0 += diff.0
     center.1 += diff.1
     mapMaster.setView center, evt.target._animateToZoom
-diff =
-  50.0994878082588 - 50.09333513996532
-  14.441656813751825 - 14.37241038890274
+  mapSlave.on \baselayerchange ({layer}) ->
+    if layer.options.diff
+      diff := that
+    else
+      diff := [0, 0]
+    {lat, lng} = mapMaster.getCenter!
+    center = [lat, lng]
+    center.0 -= diff.0
+    center.1 -= diff.1
+    zoom = mapMaster.getZoom!
+    mapSlave.setView center, zoom, animate: no
+
 res = resolutions: [0 to 13].map -> 2048.256 / (2 ** it)
 crs = new L.Proj.CRS.TMS do
   * "EPSG:102067"
@@ -84,18 +97,19 @@ maps = for let i in [0, 1]
       L.tileLayer do
         * 'https://samizdat.cz/proxy/gov_geoportal/ArcGIS/rest/services/CENIA/cenia_rt_ortofotomapa_historicka/MapServer/tile/{z}/{y}/{x}?token=WzhTU6WUdzsTdgrVaNjNnJhgdYMRdL3fsGG9CpK72sIAAPg6WLlHsh4nSw72pvQb'
         * attribution: "Historická ortofotomapa © <a href='http://www.cenia.cz/' target='_blank'>CENIA</a> 2010 a <a href='http://www.geodis.cz/' target='_blank'>GEODIS BRNO, spol. s r.o.</a> 2010, Podkladové letecké snímky poskytl <a href='http://www.geoservice.army.cz/' target='_blank'>VGHMÚř Dobruška</a>, © MO ČR 2009"
+          diff:
+            50.0994878082588 - 50.09333513996532
+            14.441656813751825 - 14.37241038890274
       L.tileLayer.wms do
-        * 'http://archivnimapy.cuzk.cz/cgi-bin/mapserv.exe?mode=map&map=e:/wwwdata/main/cio_main_wms_05.map&SERVICE=WMS&REQUEST=GetCapabilities'
-        * format: 'img/jpeg',
-          layers: ['smo5_1vyd_sm5'],
-          crs:  crs,
-          transparent: true
+        * 'https://samizdat.cz/proxy/cuzk_archiv/cgi-bin/mapserv.exe?projection=EPSG:102067&srs=EPSG:102067&map=e:/wwwdata/main/cio_main_wms_05.map'
+        * format: 'jpeg',
+          layers: ['smo5_1vyd_sm5']
     layersAssoc =
       "Ortofotomapa 50. léta": layers.0
-      "Mapa 50. léta": layers.0
+      "Mapa 50. léta": layers.1
     map.addLayer layers.0
-  if not i
-    map.addControl L.control.layers layersAssoc, {}, collapsed: no
+
+  map.addControl L.control.layers layersAssoc, {}, collapsed: no
   map
 
 sync ...maps
