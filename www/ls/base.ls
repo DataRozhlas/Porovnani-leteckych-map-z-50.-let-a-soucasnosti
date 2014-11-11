@@ -21,6 +21,7 @@ sync = (mapMaster, mapSlave) ->
 
   mapMaster.on \zoomstart (evt) ->
     <~ setImmediate
+    return unless evt.target._animateToCenter
     return if mapMaster.getZoom! == evt.target._animateToZoom
     {lat, lng} = evt.target._animateToCenter
     center = [lat, lng]
@@ -30,6 +31,7 @@ sync = (mapMaster, mapSlave) ->
 
   mapSlave.on \zoomstart (evt) ->
     <~ setImmediate
+    return unless evt.target._animateToCenter
     return if mapSlave.getZoom! == evt.target._animateToZoom
     {lat, lng} = evt.target._animateToCenter
     center = [lat, lng]
@@ -150,3 +152,42 @@ maps = for let i in [0, 1]
 sync ...maps
 if document.getElementById 'fallback'
   that.parentNode.removeChild that
+
+
+geocoder = null
+form = document.createElement \form
+  ..id = "frm-geocode"
+label = document.createElement \label
+  ..innerHTML = "Najít místo"
+inputs = document.createElement \div
+  ..className = "inputs"
+
+inputText = document.createElement \input
+  ..type = \text
+  ..setAttribute? \placeholder "Vinohradská 12"
+inputButton = document.createElement \input
+  ..type = \submit
+  ..value = "Najít"
+inputs
+  ..appendChild inputText
+  ..appendChild inputButton
+
+form
+  ..appendChild label
+  ..appendChild inputs
+  ..addEventListener \submit (evt) ->
+    evt.preventDefault!
+    geocoder := new google.maps.Geocoder! if not geocoder
+    address = inputText.value
+    (results, status) <~ geocoder.geocode {address}
+    if status != google.maps.GeocoderStatus.OK or !results.length
+      alert "Bohužel, danou adresu nebylo možné najít"
+      return
+    result = results.0
+    latlng = L.latLng result.geometry.location.lat!, result.geometry.location.lng!
+    maps.0
+      ..setView latlng, 11
+      ..fire \drag
+
+ig.containers.base
+  ..appendChild form
