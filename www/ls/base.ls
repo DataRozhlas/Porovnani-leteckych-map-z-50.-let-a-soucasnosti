@@ -121,30 +121,6 @@ maps = for let i in [0, 1]
       "Mapa současnost": layers.1
     map.addLayer layers.0
   else
-    canvasLayer = L.tileLayer.canvas!
-      ..drawTile = (canvas, tilePoint, zoom) ->
-        {x, y} = tilePoint
-        {lat, lng} = map.unproject [x * 256, y * 256], zoom
-        {lat:lat2, lng:lng2} = map.unproject [(x + 1) * 256, (y + 1) * 256], zoom
-        [a, b] = proj.forward [lng, lat]
-        [c, d] = proj.forward [lng2, lat2]
-        ctx = canvas.getContext \2d
-        img = new Image!
-          ..src = "https://samizdat.cz/proxy/cuzk_archiv/cgi-bin/mapserv.exe?projection=EPSG:102067&srs=EPSG:102067&map=e:/wwwdata/main/cio_main_wms_05.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS=smo5_1vyd_sm5&STYLES=&FORMAT=jpeg&TRANSPARENT=false&HEIGHT=256&WIDTH=256&SRS=EPSG%3A102067&BBOX=#{[a, d, c, b].join ','}"
-          ..crossOrigin = "anonymous"
-        img.addEventListener \load ->
-          ctx.drawImage img, 0, 0
-          imageData = ctx.getImageData 0, 0, 256, 256
-          {data} = imageData
-          len = data.length
-          for i in [0 til len by 4]
-            r = data[i]
-            g = data[i + 1]
-            b = data[i + 2]
-            if r > 240 and g > 240 and b > 240
-              data[i + 3] = 0
-          ctx.putImageData imageData, 0, 0
-
     layers =
       L.tileLayer do
         * 'https://samizdat.cz/proxy/gov_geoportal/ArcGIS/rest/services/CENIA/cenia_rt_ortofotomapa_historicka/MapServer/tile/{z}/{y}/{x}?token=WzhTU6WUdzsTdgrVaNjNnJhgdYMRdL3fsGG9CpK72sIAAPg6WLlHsh4nSw72pvQb'
@@ -152,7 +128,11 @@ maps = for let i in [0, 1]
           diff:
             50.0994878082588 - 50.09333513996532
             14.441656813751825 - 14.37241038890274
-      canvasLayer
+      L.tileLayer.wms do
+        * 'https://samizdat.cz/proxy/cuzk_archiv/cgi-bin/mapserv.exe?projection=EPSG:102067&srs=EPSG:102067&map=e:/wwwdata/main/cio_main_wms_05.map'
+        * format: 'png24',
+          transparent: true
+          layers: ['smo5_1vyd_sm5']
     layersAssoc =
       "Ortofotomapa 50. léta": layers.0
       "Mapa 50. léta": layers.1
