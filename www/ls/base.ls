@@ -37,7 +37,7 @@ sync = (mapMaster, mapSlave) ->
     center.1 += diff.1
     mapMaster.setView center, evt.target._animateToZoom
   mapSlave.on \baselayerchange ({layer}) ->
-    if layer.options.diff
+    if layer.options?diff
       diff := that
     else
       diff := [0, 0]
@@ -109,6 +109,15 @@ maps = for let i in [0, 1]
   map.slaveMarkerAdded = no
   map.on \click -> window.location.hash = "#{it.latlng.lat},#{it.latlng.lng},#{map.getZoom!}"
   if i is 0
+    mapGroup = L.layerGroup!
+      ..addLayer L.tileLayer do
+        * 'https://samizdat.cz/proxy/cuzk_geo//WMTS_ZM/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=zm&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
+        * attribution: "Základní mapy ČR © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
+      ..addLayer L.tileLayer.wms do
+        * 'https://samizdat.cz/proxy/cuzk_archiv/cgi-bin/mapserv.exe?projection=EPSG:102067&srs=EPSG:102067&map=e:/wwwdata/main/cio_main_wms_05.map'
+        * format: 'png24',
+          transparent: true
+          layers: ['smo5_1vyd_sm5']
     layers =
       L.tileLayer do
         * 'https://samizdat.cz/proxy/cuzk_orto/WMTS_ORTOFOTO/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=orto&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
@@ -116,9 +125,11 @@ maps = for let i in [0, 1]
       L.tileLayer do
         * 'https://samizdat.cz/proxy/cuzk_geo//WMTS_ZM/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=zm&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
         * attribution: "Základní mapy ČR © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
+      mapGroup
     layersAssoc =
       "Ortofotomapa současnost": layers.0
       "Mapa současnost": layers.1
+      "Mapa 50. léta (pouze oblast Slap)": layers.2
     map.addLayer layers.0
   else
     layers =
@@ -128,17 +139,12 @@ maps = for let i in [0, 1]
           diff:
             50.0994878082588 - 50.09333513996532
             14.441656813751825 - 14.37241038890274
-      L.tileLayer.wms do
-        * 'https://samizdat.cz/proxy/cuzk_archiv/cgi-bin/mapserv.exe?projection=EPSG:102067&srs=EPSG:102067&map=e:/wwwdata/main/cio_main_wms_05.map'
-        * format: 'png24',
-          transparent: true
-          layers: ['smo5_1vyd_sm5']
+      ...
     layersAssoc =
       "Ortofotomapa 50. léta": layers.0
-      "Mapa 50. léta": layers.1
     map.addLayer layers.0
 
-  map.addControl L.control.layers layersAssoc, {}, collapsed: no
+  map.addControl L.control.layers layersAssoc, {}, collapsed: no unless i
   map
 
 sync ...maps
