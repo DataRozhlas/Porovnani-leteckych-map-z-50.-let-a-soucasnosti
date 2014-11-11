@@ -1,7 +1,8 @@
 diff =
   50.06446107686999 - 50.05828177459839
   14.408194972510959 - 14.339055714308165
-
+referrer = document.referrer || document.location.toString!
+referrer = referrer.split '#' .0
 sync = (mapMaster, mapSlave) ->
   mapMaster.on "drag" ->
     {lat, lng} = mapMaster.getCenter!
@@ -150,9 +151,38 @@ maps = for let i in [0, 1]
   map
 
 sync ...maps
-if document.getElementById 'fallback'
-  that.parentNode.removeChild that
 
+shareArea = document.createElement \div
+  ..id = "shareArea"
+  ..className = ''
+  ..innerHTML = "Odkaz ke sdílení
+  <a href='#' class='close'>Zavřít</a>
+  <input type='text'>
+  <a class='social' target='_blank' href='https://www.facebook.com/sharer/sharer.php?u='><img src='https://samizdat.cz/tools/icons/facebook.png' alt='Sdílet na Facebooku' /></a>
+  <a class='social' target='_blank' href=''><img src='https://samizdat.cz/tools/icons/twitter.png' alt='Sdílet na Twitteru' /></a>
+  "
+shareArea.querySelector "a.close" .onclick = -> shareArea.className = ""
+shareBtn = document.createElement \a
+  ..innerHTML = "Sdílet odkaz na toto místo"
+  ..id = "shareBtn"
+  ..onclick = (evt) ->
+    evt.preventDefault!
+    shareArea.className = "visible"
+    center = maps.0.getCenter!
+    ref = referrer + '#' + "#{center.lat.toFixed 4},#{center.lng.toFixed 4},#{maps.0.getZoom!}"
+    refSoc = ref.replace '#' '%23'
+    shareArea.querySelector "input"
+      ..value = ref
+      ..focus!
+      ..setSelectionRange 0, ref.length
+    for elm, index in shareArea.querySelectorAll ".social"
+      elm.href = unless index
+         "https://www.facebook.com/sharer/sharer.php?u=" + refSoc
+      else
+        "https://twitter.com/home?status=" + refSoc + " // @dataRozhlas"
+ig.containers.base
+  ..appendChild shareBtn
+  ..appendChild shareArea
 
 geocoder = null
 form = document.createElement \form
