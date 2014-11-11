@@ -1,6 +1,6 @@
 diff =
-  50.0994878082588 - 50.09333513996532
-  14.441656813751825 - 14.37241038890274
+  50.06446107686999 - 50.05828177459839
+  14.408194972510959 - 14.339055714308165
 
 sync = (mapMaster, mapSlave) ->
   mapMaster.on "drag" ->
@@ -48,6 +48,30 @@ sync = (mapMaster, mapSlave) ->
     zoom = mapMaster.getZoom!
     mapSlave.setView center, zoom, animate: no
 
+  mapMaster.on \mousemove ({{lat, lng}:latlng}) ->
+    if not mapSlave.slaveMarkerAdded
+      mapSlave.addLayer mapSlave.slaveMarker
+      mapSlave.slaveMarkerAdded = yes
+    if mapMaster.slaveMarkerAdded
+      mapMaster.removeLayer mapMaster.slaveMarker
+      mapMaster.slaveMarkerAdded = no
+    latlng = [lat, lng]
+    latlng.0 -= diff.0
+    latlng.1 -= diff.1
+    mapSlave.slaveMarker.setLatLng latlng
+
+  mapSlave.on \mousemove ({{lat, lng}:latlng}) ->
+    if not mapMaster.slaveMarkerAdded
+      mapMaster.addLayer mapMaster.slaveMarker
+      mapMaster.slaveMarkerAdded = yes
+    if mapSlave.slaveMarkerAdded
+      mapSlave.removeLayer mapSlave.slaveMarker
+      mapSlave.slaveMarkerAdded = no
+    latlng = [lat, lng]
+    latlng.0 += diff.0
+    latlng.1 += diff.1
+    mapMaster.slaveMarker.setLatLng latlng
+
 res = resolutions: [0 to 13].map -> 2048.256 / (2 ** it)
 proj = proj4 "+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +units=m no_defs"
 crs = new L.Proj.CRS.TMS do
@@ -55,6 +79,7 @@ crs = new L.Proj.CRS.TMS do
   * "+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +units=m no_defs"
   * [-925000.000000000000 -1444353.535999999800 -400646.464000000040 -920000.000000000000]
   * res
+icon = L.divIcon className: "slaveMarker"
 maps = for let i in [0, 1]
   elm = document.createElement "div"
     ..className = "map"
@@ -80,6 +105,8 @@ maps = for let i in [0, 1]
       inertia: no
       zoomControl: !i
       crs: crs
+  map.slaveMarker = L.marker [0, 0], {icon}
+  map.slaveMarkerAdded = no
   map.on \click -> window.location.hash = "#{it.latlng.lat},#{it.latlng.lng},#{map.getZoom!}"
   if i is 0
     layers =
