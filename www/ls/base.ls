@@ -83,6 +83,7 @@ crs = new L.Proj.CRS.TMS do
   * [-925000.000000000000 -1444353.535999999800 -400646.464000000040 -920000.000000000000]
   * res
 icon = L.divIcon className: "slaveMarker"
+manualHash = no
 maps = for let i in [0, 1]
   elm = document.createElement "div"
     ..className = "map"
@@ -110,7 +111,14 @@ maps = for let i in [0, 1]
       crs: crs
   map.slaveMarker = L.marker [0, 0], {icon}
   map.slaveMarkerAdded = no
-  map.on \click -> window.location.hash = "#{it.latlng.lat},#{it.latlng.lng},#{map.getZoom!}"
+  map.on \click ->
+    manualHash := yes
+    {lat, lng} = it.latlng
+    if i
+      lat += diff.0
+      lng += diff.1
+
+    window.location.hash = "#{lat.toFixed 4},#{lng.toFixed 4},#{map.getZoom!}"
   if i is 0
     mapGroup = L.layerGroup!
       ..addLayer L.tileLayer do
@@ -152,6 +160,16 @@ maps = for let i in [0, 1]
 
 sync ...maps
 
+window.onhashchange = ->
+  return if manualHash
+  [lat, lon, zoom] = location.hash.substr 1 .split /[^-\.0-9]+/
+  lat = parseFloat lat
+  lon = parseFloat lon
+  zoom = parseFloat zoom
+  if lat and lon and zoom >= 0
+    maps.0
+      ..setView [lat, lon], zoom
+      ..fire \drag
 shareArea = document.createElement \div
   ..id = "shareArea"
   ..className = ''
