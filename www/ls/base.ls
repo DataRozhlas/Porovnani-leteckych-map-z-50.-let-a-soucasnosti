@@ -227,7 +227,11 @@ form
     evt.preventDefault!
     geocoder := new google.maps.Geocoder! if not geocoder
     address = inputText.value
-    (results, status) <~ geocoder.geocode {address}
+    bounds = new google.maps.LatLngBounds do
+      new google.maps.LatLng 48.3 11.6
+      new google.maps.LatLng 51.3 19.1
+    address += ", Česká republika"
+    (results, status) <~ geocoder.geocode {address, bounds}
     if status != google.maps.GeocoderStatus.OK or !results.length
       alert "Bohužel, danou adresu nebylo možné najít"
       return
