@@ -177,7 +177,7 @@ inputs = document.createElement \div
 
 inputText = document.createElement \input
   ..type = \text
-  ..setAttribute? \placeholder "Vinohradská 12"
+  ..setAttribute? \placeholder "Brněnská přehrada"
 inputButton = document.createElement \input
   ..type = \submit
   ..value = "Najít"
