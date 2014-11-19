@@ -99,15 +99,6 @@ maps = for let i in [0, 1]
 
     window.location.hash = "#{lat.toFixed 4},#{lng.toFixed 4},#{map.getZoom!}"
   if i is 0
-    mapGroup = L.layerGroup!
-      ..addLayer L.tileLayer do
-        * 'https://samizdat.cz/proxy/cuzk_geo//WMTS_ZM/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=zm&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
-        * attribution: "Základní mapy ČR © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
-      ..addLayer L.tileLayer.wms do
-        * 'https://samizdat.cz/proxy/cuzk_archiv/cgi-bin/mapserv.exe?projection=EPSG:102067&srs=EPSG:102067&map=e:/wwwdata/main/cio_main_wms_05.map'
-        * format: 'png24',
-          transparent: true
-          layers: ['smo5_1vyd_sm5']
     layers =
       L.tileLayer do
         * 'https://samizdat.cz/proxy/cuzk_orto/WMTS_ORTOFOTO/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=orto&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
@@ -115,11 +106,9 @@ maps = for let i in [0, 1]
       L.tileLayer do
         * 'https://samizdat.cz/proxy/cuzk_geo//WMTS_ZM/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=zm&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
         * attribution: "Základní mapy ČR © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
-      mapGroup
     layersAssoc =
       "Ortofotomapa současnost": layers.0
       "Mapa současnost": layers.1
-      "Mapa 50. léta (pouze oblast Slap)": layers.2
     map.addLayer layers.0
   else
     layers =
