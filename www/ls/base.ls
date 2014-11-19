@@ -107,8 +107,8 @@ maps = for let i in [0, 1]
         * 'https://samizdat.cz/proxy/cuzk_geo//WMTS_ZM/service.svc/get?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=zm&STYLE=default&TILEMATRIXSET=jtsk%3Aepsg%3A102067&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg'
         * attribution: "Základní mapy ČR © <a href='http://www.cuzk.cz/' target='_blank'>ČUZK</a>"
     layersAssoc =
-      "Ortofotomapa současnost": layers.0
-      "Mapa současnost": layers.1
+      "Letecká fotomapa": layers.0
+      "Běžná mapa": layers.1
     map.addLayer layers.0
   else
     layers =
@@ -163,7 +163,11 @@ shareBtn = document.createElement \a
          "https://www.facebook.com/sharer/sharer.php?u=" + refSoc
       else
         "https://twitter.com/home?status=" + refSoc + " // @dataRozhlas"
+header = document.createElement \div
+  ..id = "header"
+  ..innerHTML = "<div>Současnost</div><div>50. léta</div>"
 ig.containers.base
+  ..appendChild header
   ..appendChild shareBtn
   ..appendChild shareArea
 
