@@ -236,10 +236,11 @@ form
       alert "Bohužel, danou adresu nebylo možné najít"
       return
     result = results.0
-    latlng = L.latLng result.geometry.location.lat!, result.geometry.location.lng!
-    maps.0
-      ..setView latlng, 11
-      ..fire \drag
+    latlng = [result.geometry.location.lat!, result.geometry.location.lng!]
+    maps.0.setView latlng, 11
+    latlng.0 -= diff.0
+    latlng.1 -= diff.1
+    maps.1.setView latlng, 11
 
 ig.containers.base
   ..appendChild form
