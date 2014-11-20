@@ -146,6 +146,8 @@ shareDialog = new ig.ShareDialog ig.containers.base
     center = maps.0.getCenter!
     shareDialog.setHash "#{center.lat.toFixed 4},#{center.lng.toFixed 4},#{maps.0.getZoom!}"
 
+embedLogo = new ig.EmbedLogo ig.containers.base
+
 geocoder = null
 form = document.createElement \form
   ..id = "frm-geocode"
