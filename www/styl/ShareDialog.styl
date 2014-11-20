@@ -10,6 +10,7 @@
   cursor pointer
   &:hover
     text-decoration none
+
 #shareArea
   display none
   &.visible
@@ -22,6 +23,7 @@
   margin-left (@width / -2)
   background white
   border 2px solid #aaa
+  z-index 9999
   input
     margin-top 8px
     width 100%
@@ -32,5 +34,23 @@
     margin-top 10px
   .close
     position absolute
-    right 0px
-    top -5px
+    right -10px
+    top -10px
+    padding 5px 10px
+    text-decoration none
+    font-size 24px
+    color ColorHeading
+    &:hover
+      color darken(ColorHeading, 20%)
+      background lighten(ColorHeading, 95%)
+    &:active
+      background lighten(ColorHeading, 90%)
+
+#shareBg.visible
+  position absolute
+  top 0px
+  left 0px
+  bottom 0px
+  width 100%
+  background rgba(0,0,0,0.5)
+  z-index 9998
