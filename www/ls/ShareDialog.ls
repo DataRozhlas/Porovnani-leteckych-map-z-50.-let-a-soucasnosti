@@ -30,11 +30,20 @@ window.ig.ShareDialog = class ShareDialog
 
   createShareButton: ->
     @shareBtn = document.createElement \a
-      ..innerHTML = "Sdílet toto místo"
+      ..innerHTML = "Sdílet toto místo
+        <span class='social' target='_blank' href='https://www.facebook.com/sharer/sharer.php?u='><img src='https://samizdat.cz/tools/icons/facebook.png' alt='Sdílet na Facebooku' /></span>
+        <span class='social' target='_blank' href=''><img src='https://samizdat.cz/tools/icons/twitter.png' alt='Sdílet na Twitteru' /></span>"
       ..id = "shareBtn"
       ..onclick = (evt) ~>
         evt.preventDefault!
         @displayShareDialog!
+    for let element, index in @shareBtn.querySelectorAll ".social"
+      element.onclick = (evt) ~>
+        evt.preventDefault!
+        evt.stopPropagation!
+        link = @getCurrentLink!
+        url = if index then link.twitter else link.facebook
+        window.open url, "_blank"
 
   displayShareDialog: ->
     @shareArea.className = @shareBackground.className = "visible"
