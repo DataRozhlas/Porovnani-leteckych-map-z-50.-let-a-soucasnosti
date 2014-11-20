@@ -14,6 +14,7 @@ ig.EmbedLogo = class EmbedLogo
 
   shouldBeDisplayed: ->
     url = document.referrer
+    return true if not url
     sansProtocol = url.split "//" .1
     domain = sansProtocol.split "/" .0
     alloweds = <[rozhlas.cz]>
