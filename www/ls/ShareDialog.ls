@@ -37,24 +37,30 @@ window.ig.ShareDialog = class ShareDialog
         @displayShareDialog!
 
   displayShareDialog: ->
-    referrer = document.referrer || document.location.toString!
-    referrer = referrer.split '#' .0
     @shareArea.className = @shareBackground.className = "visible"
-    @emit "hashRequested"
-    ref = referrer
-    ref += '#' + @hash if @hash
-    refSoc = ref.replace '#' '%23'
+    link = @getCurrentLink!
     @shareArea.querySelector "input"
-      ..value = ref
+      ..value = link.normal
       ..focus!
-      ..setSelectionRange 0, ref.length
+      ..setSelectionRange 0, link.normal.length
     for elm, index in @shareArea.querySelectorAll ".social"
       elm.href = unless index
-         "https://www.facebook.com/sharer/sharer.php?u=" + refSoc
+         link.facebook
       else
-        "https://twitter.com/home?status=" + refSoc + " // @dataRozhlas"
+        link.twitter
 
   hideShareDialog: ->
     @shareArea.className = @shareBackground.className = ""
+
+  getCurrentLink: ->
+    referrer = document.referrer || document.location.toString!
+    referrer = referrer.split '#' .0
+    @emit "hashRequested"
+    normal = referrer
+    normal += '#' + @hash if @hash
+    entities = normal.replace '#' '%23'
+    facebook = "https://www.facebook.com/sharer/sharer.php?u=" + entities
+    twitter = "https://twitter.com/home?status=" + entities + " // @dataRozhlas"
+    {normal, entities, facebook, twitter}
 
   setHash: (@hash) ->
