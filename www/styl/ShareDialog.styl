@@ -26,22 +26,23 @@
   left 50%
   width 260px
   padding 5px 10px 5px 10px
+  padding-top 8px
   margin-left (@width / -2)
   background white
   border 2px solid #aaa
   z-index 9999
   input
-    margin-top 8px
+    margin-top 6px
     width 100%
-  a
+  a.social
     display block
     float left
     margin-right 10px
     margin-top 10px
   .close
     position absolute
-    right -10px
-    top -10px
+    right 0px
+    top 0px
     padding 5px 10px
     text-decoration none
     font-size 24px
@@ -51,6 +52,13 @@
       background lighten(ColorHeading, 95%)
     &:active
       background lighten(ColorHeading, 90%)
+  div.embed
+    float left
+    clear left
+    width 100%
+    margin-top 4px
+    a:hover
+      text-decoration none
 
 #shareBg.visible
   position absolute

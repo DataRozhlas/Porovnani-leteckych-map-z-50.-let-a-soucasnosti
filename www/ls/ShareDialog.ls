@@ -19,6 +19,7 @@ window.ig.ShareDialog = class ShareDialog
       <input type='text'>
       <a class='social' target='_blank' href='https://www.facebook.com/sharer/sharer.php?u='><img src='https://samizdat.cz/tools/icons/facebook.png' alt='Sdílet na Facebooku' /></a>
       <a class='social' target='_blank' href=''><img src='https://samizdat.cz/tools/icons/twitter.png' alt='Sdílet na Twitteru' /></a>
+      <div class='embed'></div>
       "
     @shareArea.querySelector "a.close" .onclick = @~hideShareDialog
 
@@ -57,6 +58,19 @@ window.ig.ShareDialog = class ShareDialog
          link.facebook
       else
         link.twitter
+    embedArea = @shareArea.querySelector "div.embed"
+      ..innerHTML = "<a class='embed' href='#'>Zobrazit kód ke vložení do stránky</a>"
+      ..onclick = ~>
+        text = '<iframe width="1000" height="600" src="' + link.normal + '" frameborder="0" allowfullscreen></iframe>'
+        elm = document.createElement \input
+          ..type = 'text'
+          ..value = text
+          ..focus!
+          ..setSelectionRange 0, text.length
+        embedArea
+          ..innerHTML = ''
+          ..appendChild elm
+          ..onclick = null
 
   hideShareDialog: ->
     @shareArea.className = @shareBackground.className = ""
