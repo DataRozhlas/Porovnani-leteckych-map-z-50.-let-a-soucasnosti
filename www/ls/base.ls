@@ -183,8 +183,8 @@ form
       return
     result = results.0
     latlng = [result.geometry.location.lat!, result.geometry.location.lng!]
-    maps.0.setView latlng, 11
-    maps.1.setView latlng, 11
+    maps.0.setView latlng, 11, animate: no
+    maps.1.setView latlng, 11, animate: no
 
 ig.containers.base
   ..appendChild form
