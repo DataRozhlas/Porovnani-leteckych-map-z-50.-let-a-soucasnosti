@@ -1,3 +1,4 @@
+viewStateChanging = no
 
 sync = (mapMaster, mapSlave) ->
   mapMaster.on "drag" ->
@@ -13,6 +14,7 @@ sync = (mapMaster, mapSlave) ->
     mapMaster.setView center, zoom, animate: no
 
   mapMaster.on \zoomstart (evt) ->
+    return if viewStateChanging
     <~ setImmediate
     return unless evt.target._animateToCenter
     return if mapMaster.getZoom! == evt.target._animateToZoom
@@ -21,12 +23,14 @@ sync = (mapMaster, mapSlave) ->
     mapSlave.setView center, evt.target._animateToZoom
 
   mapSlave.on \zoomstart (evt) ->
+    return if viewStateChanging
     <~ setImmediate
     return unless evt.target._animateToCenter
     return if mapSlave.getZoom! == evt.target._animateToZoom
     {lat, lng} = evt.target._animateToCenter
     center = [lat, lng]
     mapMaster.setView center, evt.target._animateToZoom
+
   mapSlave.on \baselayerchange ({layer}) ->
     {lat, lng} = mapMaster.getCenter!
     center = [lat, lng]
@@ -183,8 +187,10 @@ form
       return
     result = results.0
     latlng = [result.geometry.location.lat!, result.geometry.location.lng!]
+    viewStateChanging := yes
     maps.0.setView latlng, 11, animate: no
     maps.1.setView latlng, 11, animate: no
+    viewStateChanging := no
 
 ig.containers.base
   ..appendChild form
