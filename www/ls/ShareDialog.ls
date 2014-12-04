@@ -21,9 +21,6 @@ window.ig.ShareDialog = class ShareDialog
       <a class='social' target='_blank' href=''><img src='https://samizdat.cz/tools/icons/twitter.png' alt='Sdílet na Twitteru' /></a>
       <div class='embed'></div>
       "
-    @shareArea.querySelectorAll \a.social
-      ..0.onclick = -> ga? \send \event \share \facebook window.ig.projectName
-      ..1.onclick = -> ga? \send \event \share \twitter window.ig.projectName
     @shareArea.querySelector "a.close" .onclick = @~hideShareDialog
 
   createShareBackground: ->
@@ -46,13 +43,10 @@ window.ig.ShareDialog = class ShareDialog
         evt.preventDefault!
         evt.stopPropagation!
         link = @getCurrentLink!
-        media = if index then \twitter else \facebook
-        url = link[media]
-        ga? \send \event \share media, window.ig.projectName
+        url = if index then link.twitter else link.facebook
         window.open url, "_blank"
 
   displayShareDialog: ->
-    ga? \send \event \shareDialog \open
     @shareArea.className = @shareBackground.className = "visible"
     link = @getCurrentLink!
     @shareArea.querySelector "input"
@@ -67,8 +61,7 @@ window.ig.ShareDialog = class ShareDialog
     embedArea = @shareArea.querySelector "div.embed"
       ..innerHTML = "<a class='embed' href='#'>Zobrazit kód ke vložení do stránky</a>"
       ..onclick = ~>
-        ga? \send \event \share \embed window.ig.projectName
-        text = '<iframe width="1000" height="700" src="' + link.normal + '" frameborder="0" allowfullscreen></iframe>'
+        text = '<iframe width="1000" height="600" src="' + link.embedded + '" frameborder="0" allowfullscreen></iframe>'
         elm = document.createElement \input
           ..type = 'text'
           ..value = text
@@ -83,7 +76,8 @@ window.ig.ShareDialog = class ShareDialog
     @shareArea.className = @shareBackground.className = ""
 
   getCurrentLink: ->
-    referrer = document.referrer || document.location.toString!
+    embedded = document.location.toString!
+    referrer = document.referrer || embedded
     referrer = referrer.split '#' .0
     @emit "hashRequested"
     normal = referrer
@@ -91,6 +85,6 @@ window.ig.ShareDialog = class ShareDialog
     entities = normal.replace '#' '%23'
     facebook = "https://www.facebook.com/sharer/sharer.php?u=" + entities
     twitter = "https://twitter.com/home?status=" + entities + " // @dataRozhlas"
-    {normal, entities, facebook, twitter}
+    {normal, entities, facebook, twitter, embedded}
 
   setHash: (@hash) ->
